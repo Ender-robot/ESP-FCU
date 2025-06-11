@@ -1,0 +1,2 @@
+source D:/Admin-Ender/ESP-IDF_projects/ESP32Test/build/bootloader/gdbinit/symbols
+source D:/Admin-Ender/ESP-IDF_projects/ESP32Test/build/bootloader/gdbinit/connect
