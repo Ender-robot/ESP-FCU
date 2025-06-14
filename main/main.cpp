@@ -7,13 +7,18 @@ extern "C" void app_main(void) {
     MPU9250 mpu9250(I2C_NUM_0, 32, 33);
 
     while (1) {
-        uint8_t data;
-        if (mpu9250.connective())
-            data = 1;
-        else
-            data = 0;
+        float x  = 0, y = 0, z = 0;
 
-        uart0.write(&data, 1);
+        if (mpu9250.connective())
+            mpu9250.read_gyro(x, y, z);
+
+        uart0.writeAsASCII(x);
+        uart0.writeAsASCII(",");
+        uart0.writeAsASCII(y);
+        uart0.writeAsASCII(",");
+        uart0.writeAsASCII(z);
+        uart0.writeAsASCII("\n\r");
+
         delay_ms(10);
     }
 

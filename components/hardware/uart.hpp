@@ -19,6 +19,13 @@ class Uart {
 
         // 发
         bool write(const uint8_t* data, int data_len);
+        bool write(float data); // 浮点
+
+        // 以ASCII的形式发送str
+        bool writeAsASCII(char* str);
+        // 以ASCII的形式发float
+        bool writeAsASCII(float data);
+
         // 读
         bool read(int data_len);
         uint8_t data[128]; // 数据缓冲区

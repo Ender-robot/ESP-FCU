@@ -59,6 +59,33 @@ bool Uart::write(const uint8_t* data, int data_len) {
         return true;
 }
 
+// 发送float
+bool Uart::write(float data) {
+    uint8_t bytes[sizeof(float)];
+    std::memcpy(bytes, &data, sizeof(float));
+        
+    write(bytes, sizeof(float));
+
+    return true;
+}
+
+// 以ASCII发送str
+bool Uart::writeAsASCII(char* str) {
+    int len = strlen(str);
+    write(reinterpret_cast<uint8_t*>(str), len);
+
+    return true;
+}
+
+// 以ASCII发送float
+bool Uart::writeAsASCII(float data) {
+    char float_str_buffer[32]; // 创建字符缓冲区
+    int len = snprintf(float_str_buffer, sizeof(float_str_buffer), "%.2f", data); // 转换格式
+    write(reinterpret_cast<const uint8_t*>(float_str_buffer), len); // 发送
+
+    return true;
+}
+
 // 接受
 bool Uart::read(int data_len) {
     if (!success)

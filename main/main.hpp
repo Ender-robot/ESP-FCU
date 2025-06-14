@@ -10,4 +10,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h" 
 
+#include <cstdio>
+#include <string>
+
 #endif
