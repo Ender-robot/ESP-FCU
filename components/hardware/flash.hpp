@@ -1,3 +1,6 @@
+#ifndef FLASH_HPP
+#define FLASH_HPP
+
 #include "nvs_flash.h"
 #include "esp_err.h"
 
@@ -20,3 +23,5 @@ class Flash {
         bool success;
         nvs_handle_t m_nvs; // NVS操作句柄
 };
+
+#endif
