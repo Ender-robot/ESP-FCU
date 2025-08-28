@@ -49,28 +49,18 @@ bool Uart::init() {
 }
 
 // 发送
-bool Uart::write(const uint8_t* data, int data_len) {
+bool Uart::write(const void* data, size_t data_len) {
 
     if (!success)
     return false;
 
     int len;
-    len = uart_write_bytes(m_uart_id, (const uint8_t*)data, data_len);
+    len = uart_write_bytes(m_uart_id, data, data_len);
 
     if (len == -1 or (len != data_len))
         return false;
     else
         return true;
-}
-
-// 发送float
-bool Uart::write(float data) {
-    uint8_t bytes[sizeof(float)];
-    std::memcpy(bytes, &data, sizeof(float));
-        
-    write(bytes, sizeof(float));
-
-    return true;
 }
 
 // 重构的类似printf的串口打印功能
@@ -111,7 +101,7 @@ bool Uart::printf(const char* fmt, ...) {
 
     va_end(args); // 清理可变参数列表
 
-    return write(reinterpret_cast<const uint8_t*>(buffer.data()), len); // 发送
+    return write(buffer.data(), len); // 发送
 }
 
 /**

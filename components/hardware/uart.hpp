@@ -24,8 +24,7 @@ class Uart {
         bool init();
 
         // 发
-        bool write(const uint8_t* data, int data_len);
-        bool write(float data); // 浮点
+        bool write(const void* data, size_t data_len);
 
         // 类似原版printf的用法
         bool printf(const char* fmt, ...) __attribute__((format(printf, 2, 3)));
