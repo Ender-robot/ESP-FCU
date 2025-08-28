@@ -35,7 +35,7 @@ static const char *TAG = "MPU9250";
 */
 class MPU9250 {
     public:
-        MPU9250(I2c driver);
+        MPU9250(I2c& driver);
         ~MPU9250();
 
         bool init(); // 初始化
@@ -46,7 +46,7 @@ class MPU9250 {
         bool cail_accel(Vec3f& cailBiasData, Vec3f& cailGainData); // 校准加速度计
 
     private:
-        I2c i2c;
+        I2c& i2c;
         bool success;
 };
 
