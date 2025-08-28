@@ -3,8 +3,9 @@
 // 创建外设驱动
 I2c i2c0(I2C_NUM_0, 21, 22);
 Uart uart0(UART_NUM_0, 1, 3);
-MPU9250 mpu9250(i2c0);
 Flash flash;
+MPU9250 mpu9250(i2c0);
+COMM comm(uart0);
 
 void testTask(void *pvParameters) {
     (void) pvParameters; // 告诉编译器我知道这个没有别警告我
@@ -38,6 +39,20 @@ void testTask(void *pvParameters) {
     }
 }
 
+void testTask1(void *pvParameters) {
+    (void) pvParameters; // 告诉编译器我知道这个没有别警告我
+
+    Rate rate(0.5);
+    RoBoFeedBack pack = { // 随便发个输测试一下，不需要手动初始化或者定义包头，结构体定义时内部就以初始化
+        .roll = 1.0f
+    };
+
+    while (1) {
+        comm.uartSendPack(pack);
+        rate.sleep();
+    }
+}
+
 extern "C" void app_main(void) {
     // 初始化硬件外设驱动
     i2c0.init();
@@ -52,5 +67,7 @@ extern "C" void app_main(void) {
 
     delay_ms(500);
 
-    xTaskCreate(testTask, "testTask", 4096, NULL, 1, NULL);
+    // 测试一个demo时，应注释掉另一个
+    // xTaskCreate(testTask, "testTask", 4096, NULL, 1, NULL);
+    xTaskCreate(testTask1, "testTask1", 4096, NULL, 1, NULL);
 }
