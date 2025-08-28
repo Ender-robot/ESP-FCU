@@ -14,14 +14,12 @@ void testTask(void *pvParameters) {
     Rate rate(hz); // 简单频率控制（非精确）
     Vec3f accelData, gyroData, gyroBias, accelBias, accelGain, atti;
     
-    // 读取传感器校准值
+    // 读取传感器校准值（须提前校准并存入NVS）
     size_t len = sizeof(Vec3f);
     flash.readAsBlob("GyroBias", &gyroBias, &len); 
     flash.readAsBlob("AccelBias", &accelBias, &len); 
-    bool ret = flash.readAsBlob("AccelGain", &accelGain, &len); 
-    ESP_LOGI("Test", "gyro bias: %.2f %.2f %.2f", gyroBias.x, gyroBias.y, gyroBias.z);
-    ESP_LOGI("Test", "accel bias: %.2f %.2f %.2f", accelBias.x, accelBias.y, accelBias.z);
-    ESP_LOGI("Test", "accel gain: %.2f %.2f %.2f", accelGain.x, accelGain.y, accelGain.z);
+    flash.readAsBlob("AccelGain", &accelGain, &len); 
+
     // 创建姿态角估计对象
     AHRS ahrs(gyroBias, accelBias, accelGain);
 
