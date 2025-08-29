@@ -53,6 +53,21 @@ void testTask1(void *pvParameters) {
     }
 }
 
+void testTask2(void *pvParameters) {
+    (void) pvParameters; // 告诉编译器我知道这个没有别警告我
+
+    Rate rate(50);
+    RoBoCmd pack; // 数据包缓冲区
+    bool ret;
+
+    while (1)
+    {
+        ret = comm.uartRecePack(pack);
+        if (ret) ESP_LOGI("RxPack", "val1: %.2f, mode1: %d", pack.val1, pack.mode1);
+        rate.sleep();
+    }
+}
+
 extern "C" void app_main(void) {
     // 初始化硬件外设驱动
     i2c0.init();
@@ -69,5 +84,6 @@ extern "C" void app_main(void) {
 
     // 测试一个demo时，应注释掉另一个
     // xTaskCreate(testTask, "testTask", 4096, NULL, 1, NULL);
-    xTaskCreate(testTask1, "testTask1", 4096, NULL, 1, NULL);
+    // xTaskCreate(testTask1, "testTask1", 4096, NULL, 1, NULL);
+    xTaskCreate(testTask2, "testTask2", 4096, NULL, 1, NULL);
 }
