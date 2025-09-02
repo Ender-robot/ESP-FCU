@@ -3,3 +3,4 @@ sdkconfig
 sdkconfig.ci
 sdkconfig.old
 .vscode
+managed_components
