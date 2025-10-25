@@ -85,5 +85,5 @@ extern "C" void app_main(void) {
     // 测试一个demo时，应注释掉另一个
     // xTaskCreate(testTask, "testTask", 4096, NULL, 1, NULL);
     // xTaskCreate(testTask1, "testTask1", 4096, NULL, 1, NULL);
-    xTaskCreate(testTask2, "testTask2", 4096, NULL, 1, NULL);
+    // xTaskCreate(testTask2, "testTask2", 4096, NULL, 1, NULL);
 }

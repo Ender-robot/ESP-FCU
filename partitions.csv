@@ -1,6 +1,0 @@
-# Name,   Type, SubType, Offset,  Size, Flags
-# ESP-IDF V4.x/V5.x standard partition table
-# Note: See https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/partition-tables.html for details
-nvs,      data, nvs,     ,        32K,
-otadata,  data, ota,     ,        8K,
-app0,     app,  ota_0,   ,        3M,
