@@ -4,7 +4,6 @@
 #include "uart.hpp"
 #include "system.hpp"
 #include "adc.hpp"
-#include "motor_control.hpp"
 #include "mpu9250.hpp"
 #include "flash.hpp"
 #include "ahrs.hpp"
