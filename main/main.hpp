@@ -1,6 +1,7 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
+#include "gpio.hpp"
 #include "uart.hpp"
 #include "system.hpp"
 #include "adc.hpp"

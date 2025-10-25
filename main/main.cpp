@@ -1,11 +1,13 @@
 #include "main.hpp"
 
-// 创建外设驱动
-I2c i2c0(I2C_NUM_0, 21, 22);
-Uart uart0(UART_NUM_0, 1, 3);
+// 创建驱动类
+I2c i2c0(I2C_NUM_0, 15, 16);
+Uart uart1(UART_NUM_0, 40, 41);
 Flash flash;
+GPIO led_debug(GPIO_NUM_17, GPIO_MODE_OUTPUT, 1);
+
 MPU9250 mpu9250(i2c0);
-COMM comm(uart0);
+COMM comm(uart1);
 
 void testTask(void *pvParameters) {
     (void) pvParameters; // 告诉编译器我知道这个没有别警告我
@@ -33,7 +35,7 @@ void testTask(void *pvParameters) {
         atti = ahrs.attiEst(gyroData, accelData, dt, CF{});
 
         // 输出
-        uart0.printf("%f %f %f\r\n", atti.x, atti.y, atti.z);
+        uart1.printf("%f %f %f\r\n", atti.x, atti.y, atti.z);
 
         rate.sleep();
     }
@@ -68,16 +70,32 @@ void testTask2(void *pvParameters) {
     }
 }
 
+void testTask3(void *pvParameters) {
+    (void) pvParameters; // 告诉编译器我知道这个没有别警告我
+
+    while (1)
+    {
+        led_debug.write(0);
+        delay_ms(200);
+        led_debug.write(1);
+        delay_ms(200);
+    }
+    
+
+}
+
 extern "C" void app_main(void) {
     // 初始化硬件外设驱动
     i2c0.init();
-    uart0.init();
-    bool ret = flash.init();
-    if (ret) uart0.printf("init");
+
+    uart1.init();
+
+    led_debug.init();
+
+    if (flash.init()) uart1.printf("init");
     
     if (!mpu9250.init()) {
-        uart0.printf("\nERORR: fail to connect mpu !\n");
-        return ;
+        uart1.printf("\nERORR: fail to connect mpu !\n");
     }
 
     delay_ms(500);
@@ -86,4 +104,11 @@ extern "C" void app_main(void) {
     // xTaskCreate(testTask, "testTask", 4096, NULL, 1, NULL);
     // xTaskCreate(testTask1, "testTask1", 4096, NULL, 1, NULL);
     // xTaskCreate(testTask2, "testTask2", 4096, NULL, 1, NULL);
+    xTaskCreate(testTask3, "testTask3", 4096, NULL, 1, NULL);
+
+    while (1)
+    {
+        delay(102400);
+    }
+    
 }
