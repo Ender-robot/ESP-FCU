@@ -67,7 +67,7 @@ bool MPU9250::init(
 bool MPU9250::connective() {
     uint8_t data_byte;
     i2c.read_bytes_from_mem(MPU_ADDR, WHO_AM_I_REG, &data_byte, 1);
-    if (data_byte == 0x71 || data_byte == 0x75 || data_byte == 0x75 == 0x70)
+    if (data_byte == 0x71 || data_byte == 0x75 || data_byte == 0x70)
         return true;
     return false;
 }
