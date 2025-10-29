@@ -7,25 +7,6 @@
 #include "struct.hpp"
 #include "esp_log.h"
 
-/*----寄存器----*/
-#define MPU_ADDR          0x68 // MPU9250的默认地址
-#define WHO_AM_I_REG      0x75 // Should return 0x71
-#define PWR_MGMT_1        0x6B
-#define SMPLRT_DIV        0x19
-#define CONFIG            0x1A
-#define GYRO_CONFIG       0x1B
-#define ACCEL_CONFIG      0x1C
-#define ACCEL_CONFIG_2    0x1D
-#define INT_PIN_CFG       0x37
-#define USER_CTRL         0x6A
-
-/*以下为数据位寄存器地址，高位在前，因为是连续的6位所以都是只有X的高位*/
-#define ACCEL_XOUT_H      0x3B
-#define GYRO_XOUT_H       0x43
-#define TEMP_OUT_H        0x41
-
-static const char *TAG = "MPU9250";
-
 /**
  * @brief 初始化MPU9250
  * 
@@ -38,15 +19,47 @@ class MPU9250 {
         MPU9250(I2c& driver);
         ~MPU9250();
 
-        bool init(); // 初始化
+        bool init(
+            uint8_t SMPLRT_DIV_BYTE       = 0x01,
+            uint8_t GYRO_CONFIG_BYTE      = 0x08, 
+            uint8_t CONFIG_BYTE           = 0x00,
+            uint8_t ACCEL_CONFIG_BYTE     = 0x08, 
+            uint8_t ACCEL_CONFIG_2_BYTE   = 0x00,
+            float _GYRO_LSB               = 65.534,
+            float _ACCEL_LSB              = 8192.0
+        ); // 初始化
+
         bool connective(); // 检测连接是否成功
+        bool wake_up(); // 唤醒传感器
+
         bool read_gyro(Vec3f& data); // 读陀螺仪
         bool cail_gyro(Vec3f& cailData); // 校准陀螺仪
         bool read_accel(Vec3f& data); // 读加速度计
         bool cail_accel(Vec3f& cailBiasData, Vec3f& cailGainData); // 校准加速度计
 
     private:
+        static constexpr const char* TAG = "MPU9250"; // 日志标签
+
+        enum REG : uint8_t {
+            MPU_ADDR          = 0x68, // MPU9250的默认地址
+            WHO_AM_I_REG      = 0x75, // Should return 0x71
+            PWR_MGMT_1        = 0x6B,
+            SMPLRT_DIV        = 0x19,
+            CONFIG            = 0x1A,
+            GYRO_CONFIG       = 0x1B,
+            ACCEL_CONFIG      = 0x1C,
+            ACCEL_CONFIG_2    = 0x1D,
+            INT_PIN_CFG       = 0x37,
+            USER_CTRL         = 0x6A,
+
+            ACCEL_XOUT_H      = 0x3B,
+            GYRO_XOUT_H       = 0x43,
+            TEMP_OUT_H        = 0x41
+        };
+
         I2c& i2c;
+        float GYRO_LSB;
+        float ACCEL_LSB;
         bool success;
 };
 

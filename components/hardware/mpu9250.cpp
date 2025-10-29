@@ -6,7 +6,7 @@
  * @param driver  I2C驱动类
 */
 MPU9250::MPU9250(I2c& driver)
-    : i2c(driver), success(false) {
+    : i2c(driver), GYRO_LSB(1.0), ACCEL_LSB(1.0), success(false) {
 }
 
 MPU9250::~MPU9250() {
@@ -17,22 +17,41 @@ MPU9250::~MPU9250() {
  * 
  * @return true  成功
  * @return false 失败
+ * 
+ * @note SMPLRT_DIV_BYTE     采样频率  
+ *       GYRO_CONFIG_BYTE    陀螺仪设置（默认量程下LSB = 65.534） 
+ *       CONFIG_BYTE         陀螺仪滤波器设置（默认无滤波） 
+ *       ACCEL_CONFIG_BYTE   加速度计设置（默认量程下LSB = 8192） 
+ *       ACCEL_CONFIG_2_BYTE 加速度计滤波器设置（默认无滤波） 
+ *       _GYRO_LSB           数字量到物理量的转换  
+ *       _ACCEL_LSB          数字量到物理量的转换  
 */
-bool MPU9250::init() {
+bool MPU9250::init(
+    uint8_t SMPLRT_DIV_BYTE,
+    uint8_t GYRO_CONFIG_BYTE, 
+    uint8_t CONFIG_BYTE, 
+    uint8_t ACCEL_CONFIG_BYTE, 
+    uint8_t ACCEL_CONFIG_2_BYTE,
+    float _GYRO_LSB,
+    float _ACCEL_LSB
+) {
+    /* 唤醒并检查连接 */
+    wake_up();
+    success = connective();
+    if (!success) return success;
 
-    /*---初始化---*/
-    i2c.write_byte_to_mem(MPU_ADDR, PWR_MGMT_1, 0x01); // 唤醒MPU6500并设置时钟
+    /* 设置 */
+    i2c.write_byte_to_mem(MPU_ADDR, SMPLRT_DIV, SMPLRT_DIV_BYTE); // 设置MPU6500采样率
 
-    /*设置*/
-    i2c.write_byte_to_mem(MPU_ADDR, SMPLRT_DIV, 0x01); // 设置MPU6500采样率
-
-    i2c.write_byte_to_mem(MPU_ADDR, GYRO_CONFIG, 0x08); // 设置陀螺仪量程，该量程下LSB = 65.534
-    i2c.write_byte_to_mem(MPU_ADDR, CONFIG, 0x00); // 设置陀螺仪高频滤波器
+    i2c.write_byte_to_mem(MPU_ADDR, GYRO_CONFIG, GYRO_CONFIG_BYTE); // 设置陀螺仪量程，该量程下LSB = 65.534
+    i2c.write_byte_to_mem(MPU_ADDR, CONFIG, CONFIG_BYTE); // 设置陀螺仪高频滤波器
     
-    i2c.write_byte_to_mem(MPU_ADDR, ACCEL_CONFIG, 0x08); // 设置加速度计量程，该量程下LSB = 8192
-    i2c.write_byte_to_mem(MPU_ADDR, ACCEL_CONFIG_2, 0x00); // 设置加速度计低通滤波器
+    i2c.write_byte_to_mem(MPU_ADDR, ACCEL_CONFIG, ACCEL_CONFIG_BYTE); // 设置加速度计量程，该量程下LSB = 8192
+    i2c.write_byte_to_mem(MPU_ADDR, ACCEL_CONFIG_2, ACCEL_CONFIG_2_BYTE); // 设置加速度计低通滤波器
 
-    success = connective(); // 输入是否连接成功
+    /* 初始化LSB */
+    GYRO_LSB = _GYRO_LSB;
+    ACCEL_LSB = _ACCEL_LSB;
 
     return success;
 }
@@ -49,6 +68,14 @@ bool MPU9250::connective() {
     if (data_byte == 0x70)
         return true;
     return false;
+}
+
+/**
+ * @brief 将MPU从休眠模式唤醒
+ */
+bool MPU9250::wake_up() {
+    success = i2c.write_byte_to_mem(MPU_ADDR, PWR_MGMT_1, 0x01); // 唤醒MPU6500并设置时钟
+    return success;
 }
 
 /**
@@ -70,10 +97,10 @@ bool MPU9250::read_gyro(Vec3f& data) {
         int16_t gyro_x_raw = (int16_t)((raw_data[0] << 8) | raw_data[1]);
         int16_t gyro_y_raw = (int16_t)((raw_data[2] << 8) | raw_data[3]);
         int16_t gyro_z_raw = (int16_t)((raw_data[4] << 8) | raw_data[5]);
-        const float sensitivity = 65.534f; // 使用 float 类型常量以避免隐式转换
-        data.x = gyro_x_raw / sensitivity;
-        data.y = gyro_y_raw / sensitivity;
-        data.z = gyro_z_raw / sensitivity;
+
+        data.x = gyro_x_raw / GYRO_LSB;
+        data.y = gyro_y_raw / GYRO_LSB;
+        data.z = gyro_z_raw / GYRO_LSB;
 
         return true;
     }
@@ -99,10 +126,10 @@ bool MPU9250::read_accel(Vec3f& data) {
         int16_t accel_x_raw = (int16_t)((raw_data[0] << 8) | raw_data[1]);
         int16_t accel_y_raw = (int16_t)((raw_data[2] << 8) | raw_data[3]);
         int16_t accel_z_raw = (int16_t)((raw_data[4] << 8) | raw_data[5]);
-        const float sensitivity = 8192.0f; // 使用 float 类型常量以避免隐式转换
-        data.x = accel_x_raw / sensitivity;
-        data.y = accel_y_raw / sensitivity;
-        data.z = accel_z_raw / sensitivity;
+
+        data.x = accel_x_raw / ACCEL_LSB;
+        data.y = accel_y_raw / ACCEL_LSB;
+        data.z = accel_z_raw / ACCEL_LSB;
 
         return true;
     }
