@@ -41,7 +41,7 @@ bool MPU9250::init(
     if (!success) return success;
 
     /* 设置 */
-    i2c.write_byte_to_mem(MPU_ADDR, SMPLRT_DIV, SMPLRT_DIV_BYTE); // 设置MPU6500采样率
+    i2c.write_byte_to_mem(MPU_ADDR, SMPLRT_DIV, SMPLRT_DIV_BYTE); // 设置MPU采样率
 
     i2c.write_byte_to_mem(MPU_ADDR, GYRO_CONFIG, GYRO_CONFIG_BYTE); // 设置陀螺仪量程，该量程下LSB = 65.534
     i2c.write_byte_to_mem(MPU_ADDR, CONFIG, CONFIG_BYTE); // 设置陀螺仪高频滤波器
@@ -59,13 +59,15 @@ bool MPU9250::init(
 /**
  * @brief 检查与MPU9050的连接
  * 
+ * @note MPU系列的I_AM_WHO寄存器的值有很多种这里只检测0x71,0x75,0x70(这是内置MPU6500)
+ * 
  * @return true  连接
  * @return false 未连接
 */
 bool MPU9250::connective() {
     uint8_t data_byte;
     i2c.read_bytes_from_mem(MPU_ADDR, WHO_AM_I_REG, &data_byte, 1);
-    if (data_byte == 0x70)
+    if (data_byte == 0x71 || data_byte == 0x75 || data_byte == 0x75 == 0x70)
         return true;
     return false;
 }
@@ -74,12 +76,12 @@ bool MPU9250::connective() {
  * @brief 将MPU从休眠模式唤醒
  */
 bool MPU9250::wake_up() {
-    success = i2c.write_byte_to_mem(MPU_ADDR, PWR_MGMT_1, 0x01); // 唤醒MPU6500并设置时钟
+    success = i2c.write_byte_to_mem(MPU_ADDR, PWR_MGMT_1, 0x01); // 唤醒MPU并设置时钟
     return success;
 }
 
 /**
- * @brief 一次性读取MPU6500的三轴角速度
+ * @brief 一次性读取MPU的三轴角速度
  * 
  * @param data 存储3轴角速度数据的float数组的首地址，长度为三
  * 
@@ -108,7 +110,7 @@ bool MPU9250::read_gyro(Vec3f& data) {
 }
 
 /**
- * @brief 一次性读取MPU6500的三轴加速度
+ * @brief 一次性读取MPU的三轴加速度
  * 
  * @param data 存储3轴加速度数据的float数组的首地址，长度为三
  * 
