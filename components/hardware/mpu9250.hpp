@@ -10,9 +10,10 @@
 /**
  * @brief 初始化MPU9250
  * 
- * @param i2c_id  使用I2C总线ID
- * @param sda     SDA的IO
- * @param scl     SCL的IO
+ * @param i2c_id  使用I2C类
+ * 
+ * @note MPU的地址有两种0x68和0x69，这里默认为0x68，请注意你的传感器配置模式
+ *       若是0x69请修改mpu9250.hpp内的定义
 */
 class MPU9250 {
     public:
