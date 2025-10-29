@@ -1,15 +1,15 @@
 #include "i2c.hpp"
 
-I2c::I2c(i2c_port_t i2c_id, int sda, int scl)
+I2C::I2C(i2c_port_t i2c_id, int sda, int scl)
     : m_i2c_id(i2c_id), m_sda(sda), m_scl(scl), success(false) {
     }
 
-I2c::~I2c() {
+I2C::~I2C() {
     if (success)
         i2c_driver_delete(m_i2c_id);
 }
 
-bool I2c::init() {
+bool I2C::init() {
     esp_err_t err;
 
     i2c_config_t conf = {
@@ -36,7 +36,7 @@ bool I2c::init() {
     return true;
 }
 
-bool I2c::write_byte_to_mem(uint8_t addr, uint8_t mem_addr, uint8_t data) {
+bool I2C::write_byte_to_mem(uint8_t addr, uint8_t mem_addr, uint8_t data) {
     i2c_cmd_handle_t cmd_link = i2c_cmd_link_create(); // 创建命令链
     i2c_master_start(cmd_link); // 起始位
     i2c_master_write_byte(cmd_link, (addr << 1 | I2C_MASTER_WRITE), true); // 从机地址(左移一位或上0表示写)
@@ -63,7 +63,7 @@ bool I2c::write_byte_to_mem(uint8_t addr, uint8_t mem_addr, uint8_t data) {
  * @return true     读取成功
  * @return false    读取失败
  */
-bool I2c::read_bytes_from_mem(uint8_t addr, uint8_t mem_addr, uint8_t* bytes_buf, size_t len) {
+bool I2C::read_bytes_from_mem(uint8_t addr, uint8_t mem_addr, uint8_t* bytes_buf, size_t len) {
     if (len == 0) { // 读取一个字节直接返回成功
         return true;
     }

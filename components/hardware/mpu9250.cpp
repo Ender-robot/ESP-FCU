@@ -5,7 +5,7 @@
  * 
  * @param driver  I2C驱动类
 */
-MPU9250::MPU9250(I2c& driver)
+MPU9250::MPU9250(I2C& driver)
     : i2c(driver), GYRO_LSB(1.0), ACCEL_LSB(1.0), success(false) {
 }
 

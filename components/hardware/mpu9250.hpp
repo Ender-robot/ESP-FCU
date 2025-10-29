@@ -17,7 +17,7 @@
 */
 class MPU9250 {
     public:
-        MPU9250(I2c& driver);
+        MPU9250(I2C& driver);
         ~MPU9250();
 
         bool init(
@@ -58,7 +58,7 @@ class MPU9250 {
             TEMP_OUT_H        = 0x41
         };
 
-        I2c& i2c;
+        I2C& i2c;
         float GYRO_LSB;
         float ACCEL_LSB;
         bool success;

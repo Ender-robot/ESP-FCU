@@ -1,7 +1,7 @@
 #include "main.hpp"
 
 // 创建驱动类
-I2c i2c0(I2C_NUM_0, 15, 16);
+I2C i2c0(I2C_NUM_0, 15, 16);
 Uart uart1(UART_NUM_0, 40, 41);
 Flash flash;
 GPIO led_debug(GPIO_NUM_17, GPIO_MODE_OUTPUT, 1);
@@ -84,6 +84,31 @@ void testTask3(void *pvParameters) {
 
 }
 
+void testTask4(void *pvParameters) {
+    (void) pvParameters; // 告诉编译器我知道这个没有别警告我
+
+    // I2C设备地址
+    uint8_t ICM20948_ADDR = 0x68;
+
+    // 寄存器地址
+    uint8_t REG_BANK_SEL  = 0x7F;
+    uint8_t PWR_MGMT_1_    = 0x06;
+    uint8_t WHO_AM_I      = 0x00;
+
+    uint8_t data = 200;
+
+    i2c0.write_byte_to_mem(ICM20948_ADDR, PWR_MGMT_1_, 0x01);
+    i2c0.write_byte_to_mem(ICM20948_ADDR, REG_BANK_SEL, 0x00);
+    i2c0.read_bytes_from_mem(ICM20948_ADDR, WHO_AM_I, &data, 1);
+
+    while (1)
+    {
+        ESP_LOGI("Test4", "%d", data);
+        delay_ms(500);
+    }
+    
+}
+
 extern "C" void app_main(void) {
     // 初始化硬件外设驱动
     i2c0.init();
@@ -105,6 +130,7 @@ extern "C" void app_main(void) {
     // xTaskCreate(testTask1, "testTask1", 4096, NULL, 1, NULL);
     // xTaskCreate(testTask2, "testTask2", 4096, NULL, 1, NULL);
     xTaskCreate(testTask3, "testTask3", 4096, NULL, 1, NULL);
+    xTaskCreate(testTask4, "testTask4", 4096, NULL, 1, NULL);
 
     while (1)
     {

@@ -3,10 +3,10 @@
 
 #include "driver/i2c.h"
 
-class I2c {
+class I2C {
     public:
-        I2c (i2c_port_t i2c_id, int sda, int scl);
-        ~I2c ();
+        I2C (i2c_port_t i2c_id, int sda, int scl);
+        ~I2C ();
 
         bool init();
         bool write_byte_to_mem(uint8_t addr, uint8_t mem_addr, uint8_t data); // 向指定寄存器写一个字节
