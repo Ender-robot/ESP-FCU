@@ -76,8 +76,8 @@ bool MPU9250::connective() {
  * @brief 将MPU从休眠模式唤醒
  */
 bool MPU9250::wake_up() {
-    success = i2c.write_byte_to_mem(MPU_ADDR, PWR_MGMT_1, 0x01); // 唤醒MPU并设置时钟
-    return success;
+    bool _success = i2c.write_byte_to_mem(MPU_ADDR, PWR_MGMT_1, 0x01); // 唤醒MPU并设置时钟
+    return _success;
 }
 
 /**
