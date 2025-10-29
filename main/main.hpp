@@ -6,6 +6,7 @@
 #include "system.hpp"
 #include "adc.hpp"
 #include "mpu9250.hpp"
+#include "icm20948.hpp"
 #include "flash.hpp"
 #include "ahrs.hpp"
 #include "datapack.hpp"
